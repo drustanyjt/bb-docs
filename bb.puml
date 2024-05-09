@@ -1,0 +1,50 @@
+@startuml
+component [Sensors]
+component [Localization]
+component [Roscan]
+  component [ML]
+  component [Image Matching]
+component [Controls]
+component [Filters]
+component [Mission Planner]
+interface Camera
+interface "Sensor Data" as SensorData
+interface Depth
+interface Thrust
+interface Acoustics
+interface "Raw Objects" as RObjects
+interface Odometry
+interface Path
+interface "Filtered Objects" as FObjects
+
+[Localization] -( SensorData : uses
+SensorData -r- [Sensors]
+
+[Localization] -( Depth : uses
+Depth - [Roscan]
+
+[Controls] -r- Thrust
+[Roscan] -l-( Thrust
+
+[Filters] -u-( Acoustics
+Acoustics -u- [Roscan]
+
+[Filters] -r-( RObjects
+RObjects -r- [ML]
+RObjects - [Image Matching]
+
+Odometry -u- [Localization]
+[Controls] -u-( Odometry
+[Mission Planner] -u-( Odometry
+
+[Mission Planner] -r- Path
+[Controls] -l-( Path
+
+[Mission Planner] -d-( FObjects
+[Filters] -l- FObjects
+
+[Sensors] -d- Camera
+[Image Matching] -u-( Camera
+[ML] -u-( Camera
+@enduml
+
